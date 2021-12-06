@@ -1,7 +1,8 @@
 name: GameAPI
 version: '${project.version}'
 main: de.nehlen.gameapi.Gameapi
-api-version: 1.14
+api-version: 1.13
+depend: [MCCommons]
 prefix: GameAPI
 authors: [ DasNiklas ]
 description: GameAPI for minigames
