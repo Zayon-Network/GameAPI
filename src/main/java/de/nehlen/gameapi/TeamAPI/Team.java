@@ -1,9 +1,12 @@
 package de.nehlen.gameapi.TeamAPI;
 
 import de.nehlen.gameapi.Gameapi;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +25,9 @@ public class Team {
     private ChatColor teamColor;
     private Integer uuid;
     private HashMap<String, Object> memory;
+
+    @Getter @Setter
+    private Inventory teamInventory = Bukkit.createInventory(null, 27, "");
     String teamName;
     private TeamAPI teamAPI;
 
@@ -48,15 +54,15 @@ public class Team {
                 for (int i = 0; i != this.teamAPI.getRegisteredTeams().size(); i++) {
                     if (this.teamAPI.getRegisteredTeams().get(i).contains(player)) {
 
-                        Bukkit.getScheduler().runTask(Gameapi.getGameapi(), () ->Bukkit.getPluginManager().callEvent(playerQuitTeamEvent));
+                        Bukkit.getScheduler().runTask(Gameapi.getGameapi(), () -> Bukkit.getPluginManager().callEvent(playerQuitTeamEvent));
                         if (!playerQuitTeamEvent.isCancelled())
                             this.teamAPI.getRegisteredTeams().get(i).removePlayer(player);
                     }
                 }
-                Bukkit.getScheduler().runTask(Gameapi.getGameapi(), () ->Bukkit.getPluginManager().callEvent(playerJoinTeamEvent));
+                Bukkit.getScheduler().runTask(Gameapi.getGameapi(), () -> Bukkit.getPluginManager().callEvent(playerJoinTeamEvent));
                 if (!playerJoinTeamEvent.isCancelled()) {
                     this.registeredPlayers.add(player);
-                    player.setDisplayName(this.getTeamColor() + player.getCustomName());
+                    player.setDisplayName(this.getTeamColor() + player.getName());
                 }
             }
         }
@@ -72,7 +78,7 @@ public class Team {
 
         if (this.teamAPI.contains(this))
             if (this.registeredPlayers.contains(player)) {
-                Bukkit.getScheduler().runTask(Gameapi.getGameapi(), () ->Bukkit.getPluginManager().callEvent(playerQuitTeamEvent));
+                Bukkit.getScheduler().runTask(Gameapi.getGameapi(), () -> Bukkit.getPluginManager().callEvent(playerQuitTeamEvent));
                 if (!playerQuitTeamEvent.isCancelled())
                     this.registeredPlayers.remove(player);
             }
@@ -81,9 +87,11 @@ public class Team {
     public void addToMemory(String key, Object object) {
         this.memory.put(key, object);
     }
+
     public void removeFromMemory(String key) {
         this.memory.remove(key);
     }
+
     public void replaceFromMemory(String key, Object object) {
         this.memory.replace(key, object);
     }
@@ -113,6 +121,7 @@ public class Team {
 
     /**
      * Returns size of Team
+     *
      * @return integer
      */
     public Integer size() {
