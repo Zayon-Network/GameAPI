@@ -1,7 +1,7 @@
 name: GameAPI
 version: '${project.version}'
 main: de.nehlen.gameapi.Gameapi
-api-version: 1.13
+api-version: 1.19
 depend: [MCCommons]
 prefix: GameAPI
 authors: [ DasNiklas ]
