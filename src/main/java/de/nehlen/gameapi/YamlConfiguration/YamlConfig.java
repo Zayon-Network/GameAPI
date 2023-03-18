@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 public class YamlConfig implements SpigotConfigurationWrapper {
-
     private final YamlConfiguration fileConfiguration = new YamlConfiguration();
     private File file;
 
