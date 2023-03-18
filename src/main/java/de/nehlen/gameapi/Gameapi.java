@@ -33,8 +33,7 @@ public final class Gameapi extends JavaPlugin {
         gameapi = this;
         serverID = new ServerID(ServerID.generateRandomServerID());
 
-        this.databaseConfig = new YamlConfig();
-        this.databaseConfig.load(new File(getDataFolder(), "database_config.yml"));
+        this.databaseConfig = new YamlConfig(new File(getDataFolder(), "database_config.yml"));
 
         this.teamAPI = new TeamAPI(this);
         this.databaseLib = new DatabaseLib(this);
