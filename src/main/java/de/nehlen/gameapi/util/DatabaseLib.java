@@ -19,9 +19,9 @@ public class DatabaseLib implements Closeable {
     public DatabaseLib(Gameapi gameapi) {
         this.gameapi = gameapi;
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(gameapi.getDatabaseConfig().getOrSetDefault("config.database.url", "jdbc:mysql://localhost:3306/database"));
-        hikariConfig.setUsername(gameapi.getDatabaseConfig().getOrSetDefault("config.database.username", "username"));
-        hikariConfig.setPassword(gameapi.getDatabaseConfig().getOrSetDefault("config.database.password", "password"));
+        hikariConfig.setJdbcUrl((String) gameapi.getDatabaseConfig().getOrSetDefault("config.database.url", "jdbc:mysql://localhost:3306/database"));
+        hikariConfig.setUsername((String) gameapi.getDatabaseConfig().getOrSetDefault("config.database.username", "username"));
+        hikariConfig.setPassword((String) gameapi.getDatabaseConfig().getOrSetDefault("config.database.password", "password"));
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
