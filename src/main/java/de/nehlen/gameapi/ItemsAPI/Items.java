@@ -1,6 +1,5 @@
 package de.nehlen.gameapi.ItemsAPI;
 
-import de.nehlen.gameapi.util.UUIDFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -140,20 +139,6 @@ public class Items {
 
     }
 
-    /**
-     * @param Display
-     * @param Owner
-     * @return
-     */
-    public static ItemStack createSkull(String Display, String Owner) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta itemMeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.PLAYER_HEAD);
-
-        itemMeta.setOwningPlayer(Bukkit.getOfflinePlayer(UUIDFetcher.getUUID(Owner)));
-        itemMeta.setDisplayName(Display);
-        item.setItemMeta(itemMeta);
-        return item;
-    }
 
     /**
      * @param Display

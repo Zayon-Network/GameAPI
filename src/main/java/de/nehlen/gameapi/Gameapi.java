@@ -1,7 +1,7 @@
 package de.nehlen.gameapi;
 
-import de.exceptionflug.mccommons.config.shared.ConfigFactory;
-import de.exceptionflug.mccommons.config.spigot.SpigotConfig;
+import de.nehlen.gameapi.YamlConfiguration.SpigotConfigurationWrapper;
+import de.nehlen.gameapi.YamlConfiguration.YamlConfig;
 import de.nehlen.gameapi.PointsAPI.PointsAPI;
 import de.nehlen.gameapi.TeamAPI.TeamAPI;
 import de.nehlen.gameapi.listener.PlayerJoinListener;
@@ -18,10 +18,7 @@ public final class Gameapi extends JavaPlugin {
 
     @Getter private static Gameapi gameapi;
     @Getter private ServerID serverID;
-
-    //CONFIGS
-    @Getter private SpigotConfig generalConfig;
-    @Getter private SpigotConfig databaseConfig;
+    @Getter private SpigotConfigurationWrapper databaseConfig;
 
     //LISTENER
     @Getter private PlayerJoinListener playerJoinListener;
@@ -36,8 +33,8 @@ public final class Gameapi extends JavaPlugin {
         gameapi = this;
         serverID = new ServerID(ServerID.generateRandomServerID());
 
-        this.generalConfig = ConfigFactory.create(new File(getDataFolder(), "general_config.yml"), SpigotConfig.class);
-        this.databaseConfig = ConfigFactory.create(new File(getDataFolder(), "database_config.yml"), SpigotConfig.class);
+        this.databaseConfig = new YamlConfig();
+        this.databaseConfig.load(new File(getDataFolder(), "database_config.yml"));
 
         this.teamAPI = new TeamAPI(this);
         this.databaseLib = new DatabaseLib(this);

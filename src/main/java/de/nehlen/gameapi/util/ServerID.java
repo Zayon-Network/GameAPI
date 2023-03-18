@@ -1,7 +1,7 @@
 package de.nehlen.gameapi.util;
 
 import lombok.Getter;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 public class ServerID {
 
