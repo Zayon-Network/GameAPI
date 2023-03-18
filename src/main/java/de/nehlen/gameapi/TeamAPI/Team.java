@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 /*
 
@@ -23,7 +24,7 @@ public class Team {
     private ArrayList<Player> registeredPlayers;
     private Integer maxTeamSize;
     private ChatColor teamColor;
-    private Integer uuid;
+    private UUID uuid;
     private HashMap<String, Object> memory;
 
     @Getter @Setter
@@ -140,7 +141,7 @@ public class Team {
         return this.teamColor;
     }
 
-    public Integer getUuid() {
+    public UUID getUuid() {
         return this.uuid;
     }
 
