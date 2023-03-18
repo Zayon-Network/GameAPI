@@ -1,40 +1,47 @@
 package de.nehlen.gameapi.YamlConfiguration;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class YamlConfig implements SpigotConfigurationWrapper {
 
-    private final YamlConfiguration config = new YamlConfiguration();
-    private File configFile;
+    private final YamlConfiguration fileConfiguration = new YamlConfiguration();
+    private File file;
+
+    public YamlConfig(File file) {
+        File directory = file.getParentFile();
+        if (!file.exists()) {
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            try {file.createNewFile();}
+            catch (Exception e) {Bukkit.getLogger().log(Level.SEVERE, "Could not create " + file.getName() + ":", e);}
+        }
+        this.load(file);
+    }
 
     @Override
     public SpigotConfigurationWrapper load(File file) {
-        File directory = file.getParentFile();
+        this.file = file;
         try {
-            if (file.exists()) {
-                config.load(file);
-                configFile = file;
-            } else {
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-                file.createNewFile();
-                this.load(file);
-            }
+            fileConfiguration.load(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            Bukkit.getLogger().log(Level.SEVERE, "Could not read " + file.getParentFile().getAbsolutePath() + ":", e);
         }
         return this;
     }
 
     @Override
     public void save() {
-        if (configFile != null) {
+        if (file != null) {
             try {
-                getConfig().save(configFile);
+                getConfig().save(file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -43,9 +50,9 @@ public class YamlConfig implements SpigotConfigurationWrapper {
 
     @Override
     public void reload() throws IOException {
-        if (configFile != null) {
+        if (file != null) {
             try {
-                config.load(configFile);
+                fileConfiguration.load(file);
             } catch (Exception e) {
                 throw new IOException(e);
             }
@@ -55,25 +62,31 @@ public class YamlConfig implements SpigotConfigurationWrapper {
     @Override
     public boolean contains(String path) {
         try {
-            return config.contains(path);
+            return fileConfiguration.contains(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void set(String path, Object value) {
-        try {
-            config.set(path, value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public void set(final String path, final Object value) {
+        if (value instanceof Location) {
+            set(path + ".world", ((Location) value).getWorld().getName());
+            set(path + ".x", ((Location) value).getX());
+            set(path + ".y", ((Location) value).getY());
+            set(path + ".z", ((Location) value).getZ());
+            set(path + ".yaw", ((Location) value).getYaw());
+            set(path + ".pitch", ((Location) value).getPitch());
+            return;
         }
+        fileConfiguration.set(path, value);
+        save();
     }
 
     @Override
-    public Object get(String path) {
+    public <T> T get(String path) {
         try {
-            return config.get(path);
+            return (T) fileConfiguration.get(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -82,7 +95,7 @@ public class YamlConfig implements SpigotConfigurationWrapper {
     @Override
     public String getString(String path) {
         try {
-            return config.getString(path);
+            return fileConfiguration.getString(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +104,7 @@ public class YamlConfig implements SpigotConfigurationWrapper {
     @Override
     public int getInt(String path) {
         try {
-            return config.getInt(path);
+            return fileConfiguration.getInt(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -100,7 +113,7 @@ public class YamlConfig implements SpigotConfigurationWrapper {
     @Override
     public double getDouble(String path) {
         try {
-            return config.getDouble(path);
+            return fileConfiguration.getDouble(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -109,26 +122,46 @@ public class YamlConfig implements SpigotConfigurationWrapper {
     @Override
     public boolean getBoolean(String path) {
         try {
-            return config.getBoolean(path);
+            return fileConfiguration.getBoolean(path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public YamlConfiguration getConfig() {
-        return config;
+    public Location getLocation(String path) {
+        final String worldName = getOrSetDefault(path + ".world", "world");
+        final double x = getOrSetDefault(path + ".x", 0D);
+        final double y = getOrSetDefault(path + ".y", 60D);
+        final double z = getOrSetDefault(path + ".z", 0D);
+        final double yaw = getOrSetDefault(path + ".yaw", 0D);
+        final double pitch = getOrSetDefault(path + ".pitch", 0D);
+        return new Location(Bukkit.getWorld(worldName), x, y, z, (float) yaw, (float) pitch);
     }
 
     @Override
-    public Object getOrSetDefault(String path, Object defaultValue) {
-        if (contains(path)) {
-            return get(path);
-        } else {
-            set(path, defaultValue);
-            return defaultValue;
-        }
+    public YamlConfiguration getConfig() {
+        return fileConfiguration;
     }
 
+    @Override
+    public <T> T getOrSetDefault(String path, T defaultValue) {
+        if (defaultValue instanceof Location && fileConfiguration.isSet(path + ".world")) {
+            return (T) new Location(Bukkit.createWorld(new WorldCreator(fileConfiguration.getString(path + ".world"))), fileConfiguration.getDouble(path + ".x"), fileConfiguration.getDouble(path + ".y"), fileConfiguration.getDouble(path + ".z"), (float) fileConfiguration.getDouble(path + ".yaw"), (float) fileConfiguration.getDouble(path + ".pitch"));
+        }
+        final Object object = fileConfiguration.get(path);
+        if (object == null) {
+            if (defaultValue != null) {
+                set(path, defaultValue);
+            }
+            return defaultValue;
+        }
+        return (T) object;
+    }
+
+    @Override
+    public boolean isSet(String path) {
+        return fileConfiguration.isSet(path);
+    }
 }
 

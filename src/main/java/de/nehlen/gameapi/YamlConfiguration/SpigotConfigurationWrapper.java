@@ -1,6 +1,8 @@
 package de.nehlen.gameapi.YamlConfiguration;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -52,7 +54,7 @@ public interface SpigotConfigurationWrapper {
      * @param path the path to get the value at
      * @return the value at the specified path, or null if no value exists at the path
      */
-    Object get(String path);
+    <T> T get(String path);
 
     /**
      * Gets the string value at the specified path.
@@ -87,6 +89,14 @@ public interface SpigotConfigurationWrapper {
     boolean getBoolean(String path);
 
     /**
+     * Gets the location value at the specified path.
+     *
+     * @param path the path to get the value at
+     * @return the Location value at the specified path, or 0,0,0 if no value exists at the path or the value is not a location
+     */
+    Location getLocation(String path);
+
+    /**
      * Gets the underlying YamlConfiguration object.
      *
      * @return the underlying YamlConfiguration object
@@ -100,7 +110,9 @@ public interface SpigotConfigurationWrapper {
      * @param defaultValue the default value to set and return if no value exists at the path
      * @return the value at the specified path, or the default value if no value exists at the path
      */
-    Object getOrSetDefault(String path, Object defaultValue);
+    <T> T getOrSetDefault(String path, T defaultValue);
+
+    boolean isSet(String path);
 }
 
 
